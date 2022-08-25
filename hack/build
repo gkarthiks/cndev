@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+
+DIST_DIR="$@"
+go env
+
+platforms=("windows/amd64" "darwin/amd64")
+
+for platform in "${platforms[@]}"
+do
+    platform_split=(${platform//\// })
+    GOOS=${platform_split[0]}
+    GOARCH=${platform_split[1]}
+    output_name="cndev"'-'$GOOS'-'$GOARCH
+    if [ $GOOS = "windows" ]; then
+        output_name+='.exe'
+    fi
+
+    # Get the Tag or Build Number logic here
+    # refer https://levelup.gitconnected.com/golang-app-build-version-via-azure-devops-pipelines-fd4d800bf465
+
+    echo BuildVersion is: $TAG
+
+    env GOOS=$GOOS GOARCH=$GOARCH go build -ldflags "-X main.BuildVersion=$TAG" -v -o $DIST_DIR/$output_name main.go
+
+    ls -larth
+
+    if [ $? -ne 0 ]; then
+        echo 'An error has occurred! Aborting the script execution...'
+        exit 1
+    fi
+done

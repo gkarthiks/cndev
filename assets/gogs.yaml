@@ -1,0 +1,65 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: gogs
+  labels:
+    managed-by: cndev
+    part-of: gogs
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gogs
+  namespace: gogs
+  labels:
+    app.kubernetes.io/name: gogs
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gogs
+      app.kubernetes.io/name: gogs
+  template:
+    metadata:
+      labels:
+        app: gogs
+        app.kubernetes.io/name: gogs
+    spec:
+      containers:
+      - name: gogs
+        image: gogs/gogs:0.12.3
+        ports:
+        - containerPort: 22
+          name: ssh
+        - containerPort: 3000
+          name: http
+        env:
+        - name: SOCAT_LINK
+          value: "false"
+        volumeMounts:
+        - name: gogs-storage
+          mountPath: /data
+      volumes:
+      - name: gogs-storage
+        emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gogs-svc
+  namespace: gogs
+spec:
+  type: NodePort
+  selector:
+    app: gogs
+  ports:
+  - name: ssh
+    protocol: TCP
+    port: 10022
+    targetPort: 22
+    nodePort: 30022
+  - name: http
+    protocol: TCP
+    port: 18080
+    targetPort: 3000
+    nodePort: 30080
