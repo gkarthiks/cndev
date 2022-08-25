@@ -17,7 +17,7 @@ do
 
     # Get the Tag or Build Number logic here
     # refer https://levelup.gitconnected.com/golang-app-build-version-via-azure-devops-pipelines-fd4d800bf465
-
+    TAG=$(echo $GITHUB_REF | grep -o "[0-9][\.].*")
     echo BuildVersion is: $TAG
 
     env GOOS=$GOOS GOARCH=$GOARCH go build -ldflags "-X main.BuildVersion=$TAG" -v -o $DIST_DIR/$output_name main.go
