@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-DIST_DIR="$@"
 go env
 
 platforms=("windows/amd64" "darwin/amd64")
@@ -20,7 +19,7 @@ do
     TAG=$(echo $GITHUB_REF | grep -o "[0-9][\.].*")
     echo BuildVersion is: $TAG
 
-    env GOOS=$GOOS GOARCH=$GOARCH go build -ldflags "-X main.BuildVersion=$TAG" -v -o $DIST_DIR/$output_name main.go
+    env GOOS=$GOOS GOARCH=$GOARCH go build -ldflags "-X main.BuildVersion=$TAG" -v -o $output_name main.go
 
     ls -larth
 
